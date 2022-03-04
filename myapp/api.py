@@ -17,3 +17,8 @@ def mixed(request: ASGIRequest):
 
     elif request.method == "PATCH":
         return "This is PATCH Path."
+
+@api.get("/items/{item_id}")
+def read_item(request: ASGIRequest, item_id: int):
+    return {"item_id": item_id}
+
