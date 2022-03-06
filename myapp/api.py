@@ -21,3 +21,7 @@ def mixed(request: ASGIRequest):
 @api.get("/items/{int:item_id}")
 def read_item(request: ASGIRequest, item_id):
     return {"item_id": item_id}
+
+@api.get("/events/{year}/{month}/{day}")
+def events(request, year: int, month: int, day: int):
+    return {"date": [year, month, day]}
