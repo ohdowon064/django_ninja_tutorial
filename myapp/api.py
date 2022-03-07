@@ -1,6 +1,8 @@
 from django.http import HttpRequest
 from django.core.handlers.asgi import ASGIRequest
-from ninja import NinjaAPI
+from ninja import NinjaAPI, Path
+
+from myapp.schema import PathDate
 
 api = NinjaAPI()
 
@@ -23,5 +25,5 @@ def read_item(request: ASGIRequest, item_id):
     return {"item_id": item_id}
 
 @api.get("/events/{year}/{month}/{day}")
-def events(request, year: int, month: int, day: int):
-    return {"date": [year, month, day]}
+def events(request, date: PathDate = Path(...)):
+    return {"date": date.value()}
