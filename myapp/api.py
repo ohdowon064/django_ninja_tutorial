@@ -27,3 +27,9 @@ def read_item(request: ASGIRequest, item_id):
 @api.get("/events/{year}/{month}/{day}")
 def events(request, date: PathDate = Path(...)):
     return {"date": date.value()}
+
+weapons = ["Ninjato", "Shuriken", "Katana", "Kama", "Kunai", "Naginata", "Yari"]
+
+@api.get("/weapons")
+def list_weapons(request, limit: int = 10, offset: int = 0):
+    return weapons[offset: offset + limit]
