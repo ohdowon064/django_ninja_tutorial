@@ -33,3 +33,9 @@ weapons = ["Ninjato", "Shuriken", "Katana", "Kama", "Kunai", "Naginata", "Yari"]
 @api.get("/weapons")
 def list_weapons(request, limit: int = 10, offset: int = 0):
     return weapons[offset: offset + limit]
+
+@api.get("/weapons/search")
+def search_weapons(request, q: str, offset: int = 0):
+    results = [w for w in weapons if q in w.lower()]
+    print(q, results)
+    return results[offset: offset + 10]
