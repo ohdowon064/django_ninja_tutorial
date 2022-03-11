@@ -3,9 +3,9 @@ from typing import Optional
 
 from django.http import HttpRequest, HttpResponse
 from django.core.handlers.asgi import ASGIRequest
-from ninja import NinjaAPI, Path
+from ninja import NinjaAPI, Path, Query
 
-from myapp.schema import PathDate
+from myapp.schema import PathDate, Filters
 
 api = NinjaAPI()
 
@@ -23,19 +23,24 @@ def mixed(request: ASGIRequest):
     elif request.method == "PATCH":
         return "This is PATCH Path."
 
+
 @api.get("/items/{int:item_id}")
 def read_item(request: ASGIRequest, item_id):
     return {"item_id": item_id}
+
 
 @api.get("/events/{year}/{month}/{day}")
 def events(request, date: PathDate = Path(...)):
     return {"date": date.value()}
 
+
 weapons = ["Ninjato", "Shuriken", "Katana", "Kama", "Kunai", "Naginata", "Yari"]
+
 
 @api.get("/weapons")
 def list_weapons(request, limit: int = 10, offset: int = 0):
     return weapons[offset: offset + limit]
+
 
 @api.get("/weapons/search")
 def search_weapons(request, q: str, offset: int = 0):
@@ -43,18 +48,7 @@ def search_weapons(request, q: str, offset: int = 0):
     print(q, results)
     return results[offset: offset + 10]
 
-@api.get("/example")
-def example(
-    request,
-    s: Optional[str] = None,
-    b: Optional[bool] = None,
-    d: Optional[date] = None,
-    i: Optional[int] = None
-) -> HttpResponse:
-    print(s, type(s))
-    print(b, type(b))
-    print(d, type(d))
-    print(i, type(i))
-    print()
 
-    return [s, b, d, i]
+@api.get("/example")
+def example(request, filters: Filters = Query(...)):
+    return {"filters": filters.dict()}
