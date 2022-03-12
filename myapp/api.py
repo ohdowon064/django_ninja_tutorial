@@ -3,9 +3,9 @@ from typing import Optional
 
 from django.http import HttpRequest, HttpResponse
 from django.core.handlers.asgi import ASGIRequest
-from ninja import NinjaAPI, Path, Query
+from ninja import NinjaAPI, Path, Query, Body
 
-from myapp.schema import PathDate, Filters
+from myapp.schema import PathDate, Filters, Item
 
 api = NinjaAPI()
 
@@ -52,3 +52,8 @@ def search_weapons(request, q: str, offset: int = 0):
 @api.get("/example")
 def example(request, filters: Filters = Query(...)):
     return {"filters": filters.dict()}
+
+@api.post("/items")
+def create(request, item: Item = Body(...)):
+    print("created item record in db")
+    return item
