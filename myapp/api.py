@@ -53,7 +53,26 @@ def search_weapons(request, q: str, offset: int = 0):
 def example(request, filters: Filters = Query(...)):
     return {"filters": filters.dict()}
 
+
 @api.post("/items")
 def create(request, item: Item = Body(...)):
     print("created item record in db")
     return item
+
+
+@api.put("/items/{int:item_id}")
+def update(
+    request,
+    item_id: int = Path(...),
+    item: Item = Body(...)
+):
+    return {"item_id": item_id, "item": item.dict()}
+
+@api.patch("/items/{int:item_id}")
+def partial_update(
+        request,
+        item_id: int = Path(...),
+        q: str = Query(...),
+        item: Item = Body(...)
+):
+    return {"item_id": item_id, "q": q, "item": item}
