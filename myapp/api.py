@@ -3,7 +3,7 @@ from typing import Optional
 
 from django.http import HttpRequest, HttpResponse
 from django.core.handlers.asgi import ASGIRequest
-from ninja import NinjaAPI, Path, Query, Body
+from ninja import NinjaAPI, Path, Query, Body, Form
 
 from myapp.schema import PathDate, Filters, Item
 
@@ -25,7 +25,7 @@ def mixed(request: ASGIRequest):
 
 
 @api.get("/items/{int:item_id}")
-def read_item(request: ASGIRequest, item_id):
+def read_item(request: ASGIRequest, item_id: int):
     return {"item_id": item_id}
 
 
@@ -76,3 +76,11 @@ def partial_update(
         item: Item = Body(...)
 ):
     return {"item_id": item_id, "q": q, "item": item}
+
+@api.post("/login")
+def login(
+        request,
+        username: str = Form(...),
+        password: str = Form(...)
+):
+    return {"username": username, "password": "*****"}

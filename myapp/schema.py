@@ -26,3 +26,4 @@ class Item(Schema):
     description: Optional[str] = None
     price: float
     quantity: int
+
