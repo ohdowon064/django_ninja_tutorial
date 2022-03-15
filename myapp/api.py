@@ -1,4 +1,7 @@
-from django.http import HttpRequest
+from datetime import date
+from typing import Optional
+
+from django.http import HttpRequest, HttpResponse
 from django.core.handlers.asgi import ASGIRequest
 from ninja import NinjaAPI, Path
 
@@ -39,3 +42,19 @@ def search_weapons(request, q: str, offset: int = 0):
     results = [w for w in weapons if q in w.lower()]
     print(q, results)
     return results[offset: offset + 10]
+
+@api.get("/example")
+def example(
+    request,
+    s: Optional[str] = None,
+    b: Optional[bool] = None,
+    d: Optional[date] = None,
+    i: Optional[int] = None
+) -> HttpResponse:
+    print(s, type(s))
+    print(b, type(b))
+    print(d, type(d))
+    print(i, type(i))
+    print()
+
+    return [s, b, d, i]
