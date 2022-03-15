@@ -80,7 +80,6 @@ def partial_update(
 @api.post("/login")
 def login(
         request,
-        username: str = Form(...),
-        password: str = Form(...)
+        item: Item = Form(...)
 ):
-    return {"username": username, "password": "*****"}
+    return item.dict()
