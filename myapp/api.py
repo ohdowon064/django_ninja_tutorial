@@ -117,5 +117,4 @@ def create_user(request, user_info: UserIn = Body(...)):
 
 @api.get("/tasks", response=List[TaskSchema])
 def tasks(request):
-    task_qs = Task.objects.select_related("owner")
-    return list(task_qs)
+    return Task.objects.select_related("owner")
