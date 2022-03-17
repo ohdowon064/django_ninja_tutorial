@@ -70,6 +70,15 @@ class UserSchema(Schema):
 class TaskSchema(Schema):
     id: int
     title: str
-    # Field()의 첫번째 파라미터는 default 값이다. ...을 넣음으로써 default값이 없는 required field로 설정
-    completed: bool = Field(..., alias="is_completed")
-    owner_first_name: str = Field(None, alias="owner.first_name")
+    is_completed: bool
+    owner: Optional[str]
+    lower_title: str
+
+    @staticmethod
+    def resolve_owner(obj):
+        if not obj.owner:
+            return
+        return f"{obj.owner.first_name} {obj.owner.last_name}"
+
+    def resolve_lower_title(self, obj):
+        return self.title.lower()
