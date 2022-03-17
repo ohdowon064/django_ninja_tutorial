@@ -51,3 +51,11 @@ class ItemForm(Schema):
     price: EmptyStrToDefault[float] = 0.0
     quantity: EmptyStrToDefault[int] = 0
     in_stock: EmptyStrToDefault[bool] = True
+
+class UserIn(Schema):
+    username: str
+    password: str
+
+class UserOut(Schema):
+    id: int
+    username: str

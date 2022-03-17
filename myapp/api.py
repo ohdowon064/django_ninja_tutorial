@@ -1,11 +1,12 @@
 from datetime import date
 from typing import Optional, List
 
+from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
 from django.core.handlers.asgi import ASGIRequest
 from ninja import NinjaAPI, Path, Query, Body, Form, UploadedFile, File
 
-from myapp.schema import PathDate, Filters, Item
+from myapp.schema import PathDate, Filters, Item, UserIn, UserOut
 
 api = NinjaAPI()
 
@@ -98,3 +99,10 @@ def upload(request, file: UploadedFile = File(...)):
 @api.post("/upload-many")
 def upload_many(request, files: List[UploadedFile] = File(...)):
     return [f.name for f in files]
+
+@api.post("/users/", response=UserOut)
+def create_user(request, user_info: UserIn = Body(...)):
+    user = User(username=user_info.username)
+    user.set_password(user_info.password)
+    user.save()
+    return user
