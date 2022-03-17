@@ -1,8 +1,9 @@
 import datetime
-from typing import Optional, List
+from typing import Optional, List, Generic, TypeVar
 
 from ninja import Schema, Path
 from pydantic import Field
+from pydantic.fields import ModelField
 
 
 class PathDate(Schema):
@@ -27,3 +28,26 @@ class Item(Schema):
     price: float
     quantity: int
 
+
+PydanticField = TypeVar("PydanticField")
+
+
+class EmptyStrToDefault(Generic[PydanticField]):
+    @classmethod
+    def __get_validators__(cls):
+        print("get_validator 호출됨")
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, value: PydanticField, field: ModelField) -> PydanticField:
+        print("validate 호출됨")
+        if value == "":
+            return field.default
+        return value
+
+class ItemForm(Schema):
+    name: str
+    description: Optional[str] = None
+    price: EmptyStrToDefault[float] = 0.0
+    quantity: EmptyStrToDefault[int] = 0
+    in_stock: EmptyStrToDefault[bool] = True

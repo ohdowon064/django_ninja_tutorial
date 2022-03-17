@@ -1,9 +1,9 @@
 from datetime import date
-from typing import Optional
+from typing import Optional, List
 
 from django.http import HttpRequest, HttpResponse
 from django.core.handlers.asgi import ASGIRequest
-from ninja import NinjaAPI, Path, Query, Body, Form
+from ninja import NinjaAPI, Path, Query, Body, Form, UploadedFile, File
 
 from myapp.schema import PathDate, Filters, Item
 
@@ -83,3 +83,18 @@ def login(
         item: Item = Form(...)
 ):
     return item.dict()
+
+@api.post("/items-blank-default")
+def update2(request, item: Item = Form(...)):
+    return item.dict()
+
+@api.post("/upload")
+def upload(request, file: UploadedFile = File(...)):
+    data = file.read()
+    print(type(data))
+    print(data.__dir__())
+    return {"name": file.name, "len": len(data)}
+
+@api.post("/upload-many")
+def upload_many(request, files: List[UploadedFile] = File(...)):
+    return [f.name for f in files]
