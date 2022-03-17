@@ -35,15 +35,14 @@ PydanticField = TypeVar("PydanticField")
 class EmptyStrToDefault(Generic[PydanticField]):
     @classmethod
     def __get_validators__(cls):
-        print("get_validator 호출됨")
         yield cls.validate
 
     @classmethod
     def validate(cls, value: PydanticField, field: ModelField) -> PydanticField:
-        print("validate 호출됨")
         if value == "":
             return field.default
         return value
+
 
 class ItemForm(Schema):
     name: str
@@ -52,10 +51,25 @@ class ItemForm(Schema):
     quantity: EmptyStrToDefault[int] = 0
     in_stock: EmptyStrToDefault[bool] = True
 
+
 class UserIn(Schema):
     username: str
     password: str
 
+
 class UserOut(Schema):
     id: int
     username: str
+
+
+class UserSchema(Schema):
+    id: int
+    first_name: str
+    last_name: str
+
+
+class TaskSchema(Schema):
+    id: int
+    title: str
+    is_completed: bool
+    owner: Optional[UserSchema] = None

@@ -6,7 +6,8 @@ from django.http import HttpRequest, HttpResponse
 from django.core.handlers.asgi import ASGIRequest
 from ninja import NinjaAPI, Path, Query, Body, Form, UploadedFile, File
 
-from myapp.schema import PathDate, Filters, Item, UserIn, UserOut
+from myapp.models import Task
+from myapp.schema import PathDate, Filters, Item, UserIn, UserOut, TaskSchema
 
 api = NinjaAPI()
 
@@ -63,11 +64,12 @@ def create(request, item: Item = Body(...)):
 
 @api.put("/items/{int:item_id}")
 def update(
-    request,
-    item_id: int = Path(...),
-    item: Item = Body(...)
+        request,
+        item_id: int = Path(...),
+        item: Item = Body(...)
 ):
     return {"item_id": item_id, "item": item.dict()}
+
 
 @api.patch("/items/{int:item_id}")
 def partial_update(
@@ -78,6 +80,7 @@ def partial_update(
 ):
     return {"item_id": item_id, "q": q, "item": item}
 
+
 @api.post("/login")
 def login(
         request,
@@ -85,9 +88,11 @@ def login(
 ):
     return item.dict()
 
+
 @api.post("/items-blank-default")
 def update2(request, item: Item = Form(...)):
     return item.dict()
+
 
 @api.post("/upload")
 def upload(request, file: UploadedFile = File(...)):
@@ -96,9 +101,11 @@ def upload(request, file: UploadedFile = File(...)):
     print(data.__dir__())
     return {"name": file.name, "len": len(data)}
 
+
 @api.post("/upload-many")
 def upload_many(request, files: List[UploadedFile] = File(...)):
     return [f.name for f in files]
+
 
 @api.post("/users/", response=UserOut)
 def create_user(request, user_info: UserIn = Body(...)):
@@ -106,3 +113,9 @@ def create_user(request, user_info: UserIn = Body(...)):
     user.set_password(user_info.password)
     user.save()
     return user
+
+
+@api.get("/tasks", response=List[TaskSchema])
+def tasks(request):
+    task_qs = Task.objects.select_related("owner")
+    return list(task_qs)
