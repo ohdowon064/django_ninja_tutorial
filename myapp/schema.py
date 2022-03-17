@@ -82,3 +82,8 @@ class TaskSchema(Schema):
 
     def resolve_lower_title(self, obj):
         return self.title.lower()
+
+class PictureSchema(Schema):
+    title: str
+    image: str
+

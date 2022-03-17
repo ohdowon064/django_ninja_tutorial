@@ -6,8 +6,8 @@ from django.http import HttpRequest, HttpResponse
 from django.core.handlers.asgi import ASGIRequest
 from ninja import NinjaAPI, Path, Query, Body, Form, UploadedFile, File
 
-from myapp.models import Task
-from myapp.schema import PathDate, Filters, Item, UserIn, UserOut, TaskSchema
+from myapp.models import Task, Picture
+from myapp.schema import PathDate, Filters, Item, UserIn, UserOut, TaskSchema, PictureSchema
 
 api = NinjaAPI()
 
@@ -118,3 +118,9 @@ def create_user(request, user_info: UserIn = Body(...)):
 @api.get("/tasks", response=List[TaskSchema])
 def tasks(request):
     return Task.objects.select_related("owner")
+
+@api.post("/pictures", response=PictureSchema)
+def create_picture(request, title: str = Body(...), image: UploadedFile = File(...)):
+    return Picture.objects.create(title=title, image=image)
+
+
