@@ -1,8 +1,7 @@
 import datetime
 from typing import Optional, List, Generic, TypeVar
 
-from ninja import Schema, Path
-from pydantic import Field
+from ninja import Schema, Path, Field
 from pydantic.fields import ModelField
 
 
@@ -71,5 +70,6 @@ class UserSchema(Schema):
 class TaskSchema(Schema):
     id: int
     title: str
-    is_completed: bool
-    owner: Optional[UserSchema] = None
+    # Field()의 첫번째 파라미터는 default 값이다. ...을 넣음으로써 default값이 없는 required field로 설정
+    completed: bool = Field(..., alias="is_completed")
+    owner_first_name: str = Field(None, alias="owner.first_name")
