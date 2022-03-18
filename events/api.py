@@ -19,7 +19,8 @@ def list_events(request):
     ]
 
 
-@router.get("/{int:event_id}")
+
+@router.get("{int:event_id}/")
 def event_details(request, event_id: int):
     try:
         this_event = events[event_id]
