@@ -9,7 +9,7 @@ from events.api import router as events_router, RandomServiceError
 from company.api import router as company_router
 
 
-api = NinjaAPI(docs_url="docs/", csrf=True)
+api = NinjaAPI(docs_url="docs/")
 
 
 @api.exception_handler(InvalidToken)

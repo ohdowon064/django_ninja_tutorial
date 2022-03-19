@@ -1,8 +1,11 @@
+import asyncio
+import time
 from typing import Optional, List, Any
 
+from asgiref.sync import sync_to_async, async_to_sync
 from django.contrib.auth.models import User
 from django.core.handlers.asgi import ASGIRequest
-from django.http import HttpRequest
+from django.http import HttpRequest, StreamingHttpResponse, FileResponse
 from ninja import Path, Query, Body, Form, UploadedFile, File, Router
 from ninja.security import django_auth, HttpBearer
 
@@ -134,9 +137,56 @@ class AuthBearer(HttpBearer):
         raise InvalidToken
 
 
-@router.get("/pets", auth=AuthBearer(), deprecated=True)
-def pets(request):
-    print(type(request))
-    print(request.__dir__())
-    print(request.META.get("REMOTE_ADDR"))
-    return {"token": request.auth}
+#
+# @router.get("pets/", auth=AuthBearer(), deprecated=True)
+# def pets(request):
+#     print(type(request))
+#     print(request.__dir__())
+#     print(request.META.get("REMOTE_ADDR"))
+#     return {"token": request.auth}
+
+
+def file_iter(file, chunk_size=512):
+    while True:
+        chunk = file.read(chunk_size)
+        if chunk:
+            yield chunk
+        else:
+            break
+
+
+async def async_file_iter(file, chunk_size=512):
+    while True:
+        chunk = sync_to_async(file.read)(chunk_size)
+        if chunk:
+            yield chunk
+        else:
+            break
+
+
+async def async_sleep():
+    for i in range(5):
+        await asyncio.sleep(1)
+
+
+def sleep():
+    for i in range(5):
+        time.sleep(1)
+
+
+@router.post("file-response/async/")
+async def file_response_async(request, file: UploadedFile = File(...)):
+    loop = asyncio.get_event_loop()
+    loop.create_task(async_sleep())
+    task = sync_to_async(FileResponse)(file_iter(file))
+    response = await task
+    response["Content-Disposition"] = f"attachment; filename={file.name}"
+    return response
+
+
+@router.post("file-response/sync/")
+def file_response_sync(request, file: UploadedFile = File(...)):
+    sleep()
+    response = FileResponse(file_iter(file))
+    response["Content-Disposition"] = f"attachment; filename={file.name}"
+    return response
