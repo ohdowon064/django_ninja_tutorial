@@ -4,5 +4,5 @@ from events.api import router as events_router
 
 api = NinjaAPI(docs_url="docs/")
 
-api.add_router("myapp/", myapp_router)
-api.add_router("events/", events_router)
+api.add_router("myapp/", myapp_router, tags=["myapp"])
+api.add_router("events/", events_router, tags=["events"])
