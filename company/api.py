@@ -29,7 +29,7 @@ def list_employees(request):
     return employee_qs
 
 
-@router.put("employee/{int:employee_id}")
+@router.put("employee/{int:employee_id}/")
 def update_employee(
     request, employee_id: int = Path(...), payload: EmployeeIn = Body(...)
 ):
@@ -38,4 +38,11 @@ def update_employee(
         setattr(employee, field, value)
     employee.save()
 
+    return {"success": True}
+
+
+@router.delete("employee/{int:employee_id}/")
+def delete_employee(request, employee_id: int):
+    employee = get_object_or_404(Employee, id=employee_id)
+    employee.delete()
     return {"success": True}
