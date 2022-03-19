@@ -1,6 +1,8 @@
+import asyncio
 import random
+import time
 
-from ninja import Router
+from ninja import Router, Query
 from uuid import uuid4
 
 from ninja.errors import HttpError
@@ -12,8 +14,15 @@ for event in events:
     event["title"] = event["detail"][:6]
 
 
-@router.get("/")
-def list_events(request):
+@router.get("/async/")
+async def async_list_events(request, delay: int = Query(...)):
+    await asyncio.sleep(delay)
+    return [{"id": e["id"], "title": e["title"]} for e in events]
+
+
+@router.get("/sync/")
+def sync_list_events(request, delay: int = Query(...)):
+    time.sleep(delay)
     return [{"id": e["id"], "title": e["title"]} for e in events]
 
 
