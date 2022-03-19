@@ -1,5 +1,6 @@
 from ninja import NinjaAPI
 import orjson
+from ninja.errors import HttpError
 from ninja.parser import Parser
 from ninja.renderers import BaseRenderer
 
@@ -44,3 +45,4 @@ api_v2.add_router("events/", events_router, tags=["events"])
 def service_unavailable(request, exc):
     print(exc)
     # return api.create_response(request, {"message": "Please Retry later."}, status=503)
+    raise HttpError(status_code=503, message="Please retry later.")

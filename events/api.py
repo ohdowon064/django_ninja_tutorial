@@ -3,6 +3,8 @@ import random
 from ninja import Router
 from uuid import uuid4
 
+from ninja.errors import HttpError
+
 router = Router()
 
 events = [{"id": i, "detail": uuid4().hex} for i in range(20)]
@@ -31,5 +33,5 @@ class RandomServiceError(Exception):
 @router.get("/service")
 def some_operation(request):
     if random.choice([True, False]):
-        raise RandomServiceError
+        raise HttpError(status_code=503, message="Please retry later.")
     return {"message": "Success! You're Lucky!"}
