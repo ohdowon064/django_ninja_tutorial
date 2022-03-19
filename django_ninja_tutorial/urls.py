@@ -16,9 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from django_ninja_tutorial.api import api
+from django_ninja_tutorial.api import api, api_v2
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("api/", api.urls),
+    path("api/v2/", api_v2.urls),
 ]

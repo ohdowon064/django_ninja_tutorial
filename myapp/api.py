@@ -1,11 +1,21 @@
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from django.contrib.auth.models import User
 from django.core.handlers.asgi import ASGIRequest
+from django.http import HttpRequest
 from ninja import Path, Query, Body, Form, UploadedFile, File, Router
+from ninja.security import django_auth, HttpBearer
 
 from myapp.models import Task, Picture
-from myapp.schema import PathDate, Filters, Item, UserIn, UserOut, TaskSchema, PictureSchema
+from myapp.schema import (
+    PathDate,
+    Filters,
+    Item,
+    UserIn,
+    UserOut,
+    TaskSchema,
+    PictureSchema,
+)
 
 router = Router()
 
@@ -39,14 +49,14 @@ weapons = ["Ninjato", "Shuriken", "Katana", "Kama", "Kunai", "Naginata", "Yari"]
 
 @router.get("weapons/")
 def list_weapons(request, limit: int = 10, offset: int = 0):
-    return weapons[offset: offset + limit]
+    return weapons[offset : offset + limit]
 
 
 @router.get("weapons/search/")
 def search_weapons(request, q: str, offset: int = 0):
     results = [w for w in weapons if q in w.lower()]
     print(q, results)
-    return results[offset: offset + 10]
+    return results[offset : offset + 10]
 
 
 @router.get("example/")
@@ -61,29 +71,19 @@ def create(request, item: Item = Body(...)):
 
 
 @router.put("items/{int:item_id}/")
-def update(
-        request,
-        item_id: int = Path(...),
-        item: Item = Body(...)
-):
+def update(request, item_id: int = Path(...), item: Item = Body(...)):
     return {"item_id": item_id, "item": item.dict()}
 
 
 @router.patch("items/{int:item_id}/")
 def partial_update(
-        request,
-        item_id: int = Path(...),
-        q: str = Query(...),
-        item: Item = Body(...)
+    request, item_id: int = Path(...), q: str = Query(...), item: Item = Body(...)
 ):
     return {"item_id": item_id, "q": q, "item": item}
 
 
 @router.post("login/")
-def login(
-        request,
-        item: Item = Form(...)
-):
+def login(request, item: Item = Form(...)):
     return item.dict()
 
 
@@ -121,3 +121,22 @@ def tasks(request):
 @router.post("pictures/", response=PictureSchema)
 def create_picture(request, title: str = Body(...), image: UploadedFile = File(...)):
     return Picture.objects.create(title=title, image=image)
+
+
+class InvalidToken(Exception):
+    pass
+
+
+class AuthBearer(HttpBearer):
+    def authenticate(self, request: HttpRequest, token: str) -> Optional[Any]:
+        if token == "supersecret":
+            return True
+        raise InvalidToken
+
+
+@router.get("/pets", auth=AuthBearer(), deprecated=True)
+def pets(request):
+    print(type(request))
+    print(request.__dir__())
+    print(request.META.get("REMOTE_ADDR"))
+    return {"token": request.auth}

@@ -2,6 +2,7 @@ from datetime import date
 from typing import Optional
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from ninja import Schema, ModelSchema
 
 
@@ -22,5 +23,5 @@ class EmployeeOut(Schema):
 
 class UserSchema(ModelSchema):
     class Config:
-        model = settings.AUTH_USER_MODEL
+        model = User
         model_exclude = ["password", "last_login", "user_permissions"]
