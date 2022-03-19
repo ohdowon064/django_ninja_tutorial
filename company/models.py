@@ -1,7 +1,9 @@
 from django.db import models
 
+
 class Department(models.Model):
     title = models.CharField(max_length=100)
+
 
 class Employee(models.Model):
     first_name = models.CharField(max_length=100)
