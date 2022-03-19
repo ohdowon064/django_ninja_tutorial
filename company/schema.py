@@ -23,4 +23,4 @@ class EmployeeOut(Schema):
 class UserSchema(ModelSchema):
     class Config:
         model = settings.AUTH_USER_MODEL
-        model_fields = ["id", "username", "first_name", "last_name"]
+        model_exclude = ["password", "last_login", "user_permissions"]
